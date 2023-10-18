@@ -1,5 +1,5 @@
-name: 'Push SpotBugs report'
-description: 'Push SpotBugs Code Analysis report'
+name: 'Publish SpotBugs report'
+description: 'Publish SpotBugs Code Analysis report (adapted from jwgmeligmeyling/spotbugs-github-action)'
 author: 'Luke Collins'
 inputs:
   path:
