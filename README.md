@@ -52,7 +52,7 @@ jobs:
           ${{ runner.os }}-maven-
     - name: Build with Maven
       run: mvn -B verify spotbugs:spotbugs
-    - uses: lcollins/spotbugs-github-action@master
+    - uses: lcollins/spotbugs-github-action@v2.0.0
       with:
         path: '**/spotbugsXml.xml'
 ```
