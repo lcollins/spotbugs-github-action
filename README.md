@@ -28,6 +28,9 @@ Optional. Title for the check run to create. Defaults to `SpotBugs Source Code A
 ### `token`
 Optional. GitHub API access token. Defaults to `${{ github.token }}`, which is set by `actions/checkout@v2` minimally.
 
+### `fail-on-violation`
+Optional. Whether to fail the check if any violations are found. Defaults to `false`.
+
 ## Example usage
 
 ```yaml
@@ -52,7 +55,7 @@ jobs:
           ${{ runner.os }}-maven-
     - name: Build with Maven
       run: mvn -B verify spotbugs:spotbugs
-    - uses: lcollins/spotbugs-github-action@v2.0.0
+    - uses: lcollins/spotbugs-github-action@v3.0.0
       with:
         path: '**/spotbugsXml.xml'
 ```

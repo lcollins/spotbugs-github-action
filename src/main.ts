@@ -13,6 +13,7 @@ async function run(): Promise<void> {
     const path = core.getInput(Inputs.Path, {required: true})
     const name = core.getInput(Inputs.Name)
     const title = core.getInput(Inputs.Title)
+    const failOnViolations = core.getBooleanInput(Inputs.FailOnViolation)
 
     const searchResult = await findResults(path)
     if (searchResult.filesToUpload.length === 0) {
@@ -41,7 +42,13 @@ async function run(): Promise<void> {
       core.debug(`Created ${groupedAnnotations.length} buckets`)
 
       for (const annotationSet of groupedAnnotations) {
-        await createCheck(name, title, annotationSet, annotations.length)
+        await createCheck(
+          name,
+          title,
+          annotationSet,
+          annotations.length,
+          failOnViolations
+        )
       }
     }
   } catch (error) {
@@ -53,7 +60,8 @@ async function createCheck(
   name: string,
   title: string,
   annotations: Annotation[],
-  numErrors: number
+  numErrors: number,
+  failOnViolations: boolean
 ): Promise<void> {
   const octokit = getOctokit(core.getInput(Inputs.Token))
   let sha = context.sha
@@ -78,7 +86,12 @@ async function createCheck(
       head_sha: sha,
       name,
       status: 'completed' as const,
-      conclusion: numErrors === 0 ? ('success' as const) : ('neutral' as const),
+      conclusion:
+        numErrors === 0
+          ? ('success' as const)
+          : failOnViolations
+            ? ('failure' as const)
+            : ('neutral' as const),
       output: {
         title,
         summary: `${numErrors} violation(s) found`,
