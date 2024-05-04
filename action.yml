@@ -20,6 +20,10 @@ inputs:
       Also when generating a new PAT, select the least scopes necessary.
       [Learn more about creating and using encrypted secrets](https://help.github.com/en/actions/automating-your-workflow-with-github-actions/creating-and-using-encrypted-secrets)
     default: ${{ github.token }}
+  fail-on-violation:
+    description: 'Enables status markers to be added to check'
+    default: false
+    required: false
 runs:
   using: 'node20'
   main: 'dist/index.js'

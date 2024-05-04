@@ -191,7 +191,7 @@ function run() {
             const path = core.getInput(constants_1.Inputs.Path, { required: true });
             const name = core.getInput(constants_1.Inputs.Name);
             const title = core.getInput(constants_1.Inputs.Title);
-            const failOnViolations = core.getBooleanInput(constants_1.Inputs.FailOnViolation);
+            const failOnViolations = core.getBooleanInput(constants_1.Inputs.FailOnViolation, { required: false });
             const searchResult = yield (0, search_1.findResults)(path);
             if (searchResult.filesToUpload.length === 0) {
                 core.warning(`No files were found for the provided path: ${path}. No results will be uploaded.`);
@@ -239,7 +239,11 @@ function createCheck(name, title, annotations, numErrors, failOnViolations) {
         }
         else {
             const check_run_id = existingCheckRun.id;
-            const update_req = Object.assign(Object.assign({}, github_1.context.repo), { check_run_id, status: 'completed', conclusion: 'neutral', output: {
+            const update_req = Object.assign(Object.assign({}, github_1.context.repo), { check_run_id, status: 'completed', conclusion: numErrors === 0
+                    ? 'success'
+                    : failOnViolations
+                        ? 'failure'
+                        : 'neutral', output: {
                     title,
                     summary: `${numErrors} violation(s) found`,
                     annotations

@@ -13,7 +13,9 @@ async function run(): Promise<void> {
     const path = core.getInput(Inputs.Path, {required: true})
     const name = core.getInput(Inputs.Name)
     const title = core.getInput(Inputs.Title)
-    const failOnViolations = core.getBooleanInput(Inputs.FailOnViolation)
+    const failOnViolations = core.getBooleanInput(Inputs.FailOnViolation, {
+      required: false
+    })
 
     const searchResult = await findResults(path)
     if (searchResult.filesToUpload.length === 0) {
@@ -107,7 +109,12 @@ async function createCheck(
       ...context.repo,
       check_run_id,
       status: 'completed' as const,
-      conclusion: 'neutral' as const,
+      conclusion:
+        numErrors === 0
+          ? ('success' as const)
+          : failOnViolations
+            ? ('failure' as const)
+            : ('neutral' as const),
       output: {
         title,
         summary: `${numErrors} violation(s) found`,
