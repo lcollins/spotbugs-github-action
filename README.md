@@ -26,7 +26,7 @@ Optional. Name for the check run to create. Defaults to `spotbugs`.
 Optional. Title for the check run to create. Defaults to `SpotBugs Source Code Analyzer report`.
 
 ### `token`
-Optional. GitHub API access token. Defaults to `${{ github.token }}`, which is set by `actions/checkout@v2` minimally.
+Optional. GitHub API access token. Defaults to `${{ github.token }}`, which is set by `actions/checkout@v4` minimally.
 
 ### `fail-on-violation`
 Optional. Whether to fail the check if any violations are found. Defaults to `false`.
@@ -42,7 +42,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v4
     - name: Set up JDK 1.8
       uses: actions/setup-java@v1
       with:
@@ -84,7 +84,7 @@ As it is, there is not really a sensible way to run this action on the merge com
 Even for `pull_request` events there is the possibility to checkout the pull request head instead. In order to do so, change your `checkout` action accordingly:
 
 ```yaml
-- uses: actions/checkout@v2
+- uses: actions/checkout@v4
   with:
     ref: ${{ github.event.pull_request.head.sha }}
 ```
