@@ -2,7 +2,7 @@ import * as core from '@actions/core'
 import {findResults} from './search'
 import {Inputs} from './constants'
 import {annotationsForPath} from './annotations'
-import {chain, splitEvery} from 'ramda'
+import {splitEvery} from 'ramda'
 import {Annotation} from './github'
 import {getOctokit, context} from '@actions/github'
 
@@ -28,9 +28,11 @@ async function run(): Promise<void> {
       )
       core.debug(`Root artifact directory is ${searchResult.rootDirectory}`)
 
-      const annotations: Annotation[] = chain(
-        annotationsForPath,
-        searchResult.filesToUpload
+      const results = searchResult.filesToUpload.map(annotationsForPath)
+      const annotations: Annotation[] = results.flatMap(r => r.annotations)
+      const totalViolations: number = results.reduce(
+        (sum, r) => sum + r.violationCount,
+        0
       )
       core.debug(
         `Grouping ${annotations.length} annotations into chunks of ${MAX_ANNOTATIONS_PER_REQUEST}`
@@ -48,7 +50,7 @@ async function run(): Promise<void> {
           name,
           title,
           annotationSet,
-          annotations.length,
+          totalViolations,
           failOnViolations
         )
       }

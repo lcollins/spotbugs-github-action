@@ -25,7 +25,12 @@ function asArray<T>(arg: T[] | T | undefined): T[] {
   return !arg ? [] : Array.isArray(arg) ? arg : [arg]
 }
 
-export function annotationsForPath(resultFile: string): Annotation[] {
+export interface AnnotationsResult {
+  annotations: Annotation[]
+  violationCount: number
+}
+
+export function annotationsForPath(resultFile: string): AnnotationsResult {
   core.info(`Creating annotations for ${resultFile}`)
   const root: string = process.env['GITHUB_WORKSPACE'] || ''
 
@@ -52,7 +57,7 @@ export function annotationsForPath(resultFile: string): Annotation[] {
       })
   )
 
-  return chain(BugInstance => {
+  const annotations = chain(BugInstance => {
     const annotationsForBug: Annotation[] = []
     const sourceLines = asArray(BugInstance.SourceLine)
     const primarySourceLine: SourceLine | undefined =
@@ -90,4 +95,6 @@ export function annotationsForPath(resultFile: string): Annotation[] {
 
     return annotationsForBug
   }, violations)
+
+  return {annotations, violationCount: violations.length}
 }
