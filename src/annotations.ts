@@ -51,7 +51,14 @@ export function annotationsForPath(resultFile: string): AnnotationsResult {
     identity,
     (sourcePath: string) =>
       asArray(result?.BugCollection?.Project?.SrcDir).find(SrcDir => {
-        const combinedPath = path.join(SrcDir, sourcePath)
+        const resolvedSrcDir = path.resolve(SrcDir)
+        const combinedPath = path.resolve(resolvedSrcDir, sourcePath)
+        if (!combinedPath.startsWith(resolvedSrcDir + path.sep)) {
+          core.debug(
+            `Skipping ${combinedPath} because it is outside of ${resolvedSrcDir}`
+          )
+          return false
+        }
         const fileExists = fs.existsSync(combinedPath)
         core.debug(`${combinedPath} ${fileExists ? 'does' : 'does not'} exists`)
         return fileExists
@@ -74,7 +81,7 @@ export function annotationsForPath(resultFile: string): AnnotationsResult {
         annotation_level: AnnotationLevel.warning,
         path: path.relative(
           root,
-          path.join(SrcDir, primarySourceLine?.sourcepath)
+          path.resolve(SrcDir, primarySourceLine?.sourcepath)
         ),
         start_line: Number(primarySourceLine?.start || 1),
         end_line: Number(
