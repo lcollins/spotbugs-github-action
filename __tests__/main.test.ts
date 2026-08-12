@@ -5,7 +5,7 @@ import {annotationsForPath} from '../src/annotations'
 
 beforeAll(() => {
   jest.spyOn(fs, 'existsSync').mockReturnValue(true)
-  process.env['GITHUB_WORKSPACE'] = __dirname
+  process.env['GITHUB_WORKSPACE'] = path.resolve(__dirname, '..')
 })
 
 test('parses file', async () => {

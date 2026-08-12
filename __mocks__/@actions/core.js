@@ -1,0 +1,37 @@
+// Manual mock for @actions/core used in jest tests
+module.exports = {
+  info: jest.fn(),
+  debug: jest.fn(),
+  warning: jest.fn(),
+  error: jest.fn(),
+  notice: jest.fn(),
+  setFailed: jest.fn(),
+  getInput: jest.fn(),
+  getBooleanInput: jest.fn(),
+  setOutput: jest.fn(),
+  startGroup: jest.fn(),
+  endGroup: jest.fn(),
+  group: jest.fn(),
+  exportVariable: jest.fn(),
+  setSecret: jest.fn(),
+  addPath: jest.fn(),
+  saveState: jest.fn(),
+  getState: jest.fn(),
+  isDebug: jest.fn(() => false),
+  summary: {
+    addRaw: jest.fn().mockReturnThis(),
+    addHeading: jest.fn().mockReturnThis(),
+    addCodeBlock: jest.fn().mockReturnThis(),
+    addList: jest.fn().mockReturnThis(),
+    addTable: jest.fn().mockReturnThis(),
+    addDetails: jest.fn().mockReturnThis(),
+    addImage: jest.fn().mockReturnThis(),
+    addSeparator: jest.fn().mockReturnThis(),
+    addBreak: jest.fn().mockReturnThis(),
+    addQuote: jest.fn().mockReturnThis(),
+    addLink: jest.fn().mockReturnThis(),
+    stringify: jest.fn(() => ''),
+    write: jest.fn(),
+    clear: jest.fn()
+  }
+}

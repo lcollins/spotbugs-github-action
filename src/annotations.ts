@@ -34,10 +34,21 @@ export interface AnnotationsResult {
 export function annotationsForPath(resultFile: string): AnnotationsResult {
   core.info(`Creating annotations for ${resultFile}`)
   const root: string = process.env['GITHUB_WORKSPACE'] || ''
+  const resolvedRoot = path.resolve(root || process.cwd())
+
+  const resolvedResultFile = path.resolve(resultFile)
+  if (
+    !resolvedResultFile.startsWith(resolvedRoot + path.sep) &&
+    resolvedResultFile !== resolvedRoot
+  ) {
+    throw new Error(
+      `Result file ${resultFile} is outside of workspace ${resolvedRoot}`
+    )
+  }
 
   const parser = new XMLParser(XML_PARSE_OPTIONS)
   const result: FindbugsResult = parser.parse(
-    fs.readFileSync(resultFile, 'UTF-8' as BufferEncoding)
+    fs.readFileSync(resolvedResultFile, 'UTF-8' as BufferEncoding)
   )
 
   const violations = asArray(result?.BugCollection?.BugInstance)
@@ -45,13 +56,21 @@ export function annotationsForPath(resultFile: string): AnnotationsResult {
     a => a.type,
     asArray(result?.BugCollection?.BugPattern)
   )
-  core.info(`${resultFile} has ${violations.length} violations`)
+  core.info(`${resolvedResultFile} has ${violations.length} violations`)
 
   const getFilePath: (sourcePath: string) => string | undefined = memoizeWith(
     identity,
     (sourcePath: string) =>
       asArray(result?.BugCollection?.Project?.SrcDir).find(SrcDir => {
-        const combinedPath = path.join(SrcDir, sourcePath)
+        const resolvedSrcDir = path.resolve(SrcDir)
+        const combinedPath = path.resolve(resolvedSrcDir, sourcePath)
+        // Validate combined path is within SrcDir to prevent path traversal
+        if (!combinedPath.startsWith(resolvedSrcDir + path.sep)) {
+          core.debug(
+            `Skipping ${combinedPath} because it is outside of ${resolvedSrcDir}`
+          )
+          return false
+        }
         const fileExists = fs.existsSync(combinedPath)
         core.debug(`${combinedPath} ${fileExists ? 'does' : 'does not'} exists`)
         return fileExists
@@ -70,12 +89,14 @@ export function annotationsForPath(resultFile: string): AnnotationsResult {
       getFilePath(primarySourceLine?.sourcepath)
 
     if (primarySourceLine?.start && SrcDir) {
+      const resolvedSrcDir = path.resolve(SrcDir)
+      const fullPath = path.resolve(
+        resolvedSrcDir,
+        primarySourceLine.sourcepath
+      )
       const annotation: Annotation = {
         annotation_level: AnnotationLevel.warning,
-        path: path.relative(
-          root,
-          path.join(SrcDir, primarySourceLine?.sourcepath)
-        ),
+        path: path.relative(resolvedRoot, fullPath),
         start_line: Number(primarySourceLine?.start || 1),
         end_line: Number(
           primarySourceLine?.end || primarySourceLine?.start || 1
