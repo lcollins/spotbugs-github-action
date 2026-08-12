@@ -96,7 +96,7 @@ export function annotationsForPath(resultFile: string): AnnotationsResult {
       )
       const annotation: Annotation = {
         annotation_level: AnnotationLevel.warning,
-        path: path.relative(root, fullPath),
+        path: path.relative(resolvedRoot, fullPath),
         start_line: Number(primarySourceLine?.start || 1),
         end_line: Number(
           primarySourceLine?.end || primarySourceLine?.start || 1
