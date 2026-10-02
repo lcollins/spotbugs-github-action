@@ -33,7 +33,7 @@
     "@actions/io": "^3.0.2",
     "@octokit/rest": "latest",
     "@types/html-to-text": "^9.0.4",
-    "fast-xml-parser": "^5.11.1",
+    "fast-xml-parser": "^5.11.2",
     "html-to-text": "latest",
     "ramda": "^0.32.0",
     "unescape": "latest"
@@ -44,8 +44,8 @@
     "@types/jest": "^30.0.0",
     "@types/node": "^26.6.3",
     "@types/ramda": "^0.32.0",
-    "@typescript-eslint/eslint-plugin": "^8.70.1",
-    "@typescript-eslint/parser": "^8.70.1",
+    "@typescript-eslint/eslint-plugin": "^8.71.0",
+    "@typescript-eslint/parser": "^8.71.0",
     "esbuild": "^0.28.2",
     "eslint": "^10.11.0",
     "eslint-plugin-eslint-comments": "^3.2.0",
@@ -60,6 +60,6 @@
     "js-yaml": "^5.2.3",
     "prettier": "3.9.9",
     "ts-jest": "^29.4.14",
-    "typescript": "^5.9.3"
+    "typescript": "^7.0.2"
   }
 }
